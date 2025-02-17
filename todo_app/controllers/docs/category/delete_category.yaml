@@ -1,18 +1,18 @@
 tags:
   - Categories
-summary: Xoá một công việc
-description: API để xoá một công việc trong danh sách
+summary: Xoá một danh mục
+description: API để xoá một danh mục trong danh sách
 
 parameters:
-  - name: todo_id
+  - name: cate_id
     in: query
     type: string
     required: true
-    description: Mã của của công việc cần xoá
+    description: Mã của của danh mục cần xoá
 
 responses:
   200:
-    description: Xoá một công việc thành công
+    description: Xoá một danh mục thành công
     schema:
       type: object
       properties:

@@ -4,6 +4,11 @@ summary: Cập nhật danh mục
 description: API để cập nhật một danh mục
 
 parameters:
+  - name: cate_id
+    in: formData
+    type: string
+    required: true
+    description: Mã của danh mục cần cập nhật
   - name: name
     in: formData
     type: string

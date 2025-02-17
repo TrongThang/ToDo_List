@@ -53,6 +53,7 @@ def update_categories(cate_id, name):
     }
 
 def delete_categories(cate_id):
+    print(cate_id)
     cate = Category.query.get(cate_id)
     if not cate:
         message = "Không tìm thấy danh mục yêu cầu"

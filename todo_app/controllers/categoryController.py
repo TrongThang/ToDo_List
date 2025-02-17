@@ -21,11 +21,11 @@ class CategoryController(Resource):
         cate_id = request.form.get('cate_id')
         name = request.form.get('name')
 
-        result = get_categories()
+        result = update_categories(cate_id, name)
         return jsonify(result)
     @swag_from('docs/category/delete_category.yaml')
     def delete(self):
-        cate_id = request.form.get('cate_id')
+        cate_id = request.args.get('cate_id')
 
-        result = get_categories(cate_id)
+        result = delete_categories(cate_id)
         return jsonify(result)
