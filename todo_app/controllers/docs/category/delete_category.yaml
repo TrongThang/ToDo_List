@@ -1,0 +1,25 @@
+tags:
+  - Categories
+summary: Xoá một công việc
+description: API để xoá một công việc trong danh sách
+
+parameters:
+  - name: todo_id
+    in: query
+    type: string
+    required: true
+    description: Mã của của công việc cần xoá
+
+responses:
+  200:
+    description: Xoá một công việc thành công
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+  400:
+    description: Lỗi dữ liệu đầu vào
+    examples:
+      application/json:
+      message: "Không tìm thấy công việc cần xoá"

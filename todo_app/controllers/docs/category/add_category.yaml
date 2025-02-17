@@ -1,0 +1,30 @@
+tags:
+  - Categories
+summary: Thêm danh mục mới
+description: API để thêm một danh mục mới
+
+parameters:
+  - name: name
+    in: formData
+    type: string
+    required: true
+    description: Tên của danh mục cho các công việc
+
+responses:
+  201:
+    description: Thêm danh mục thành công
+    schema:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            name:
+              type: string
+        success:
+          type: boolean
+  400:
+    description: Lỗi dữ liệu đầu vào
+    examples:
+      application/json:
+      message: "Tên danh mục không được bỏ trống"

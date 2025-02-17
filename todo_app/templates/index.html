@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>To Do List</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/js/bootstrap.min.js">
+</head>
+<body>
+    <h3>Danh sách việc cần làm</h3>
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <td>STT</td>
+                    <td>Tiêu đề</td>
+                    <td>Nội dung</td>
+                    <td>Thao tác</td>
+                </tr>
+            </thead>
+            {% for item in list_todo %}
+            <li>
+                <p>{{ item.id }}</p>
+                <p>{{ item.title }}</p>
+                <p>{{ item.content }}</p>
+                <p>{{ item.status }}</p>
+            </li>
+            {%endfor%}
+        </table>
+    </div>
+</body>
+</html>

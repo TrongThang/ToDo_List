@@ -1,0 +1,65 @@
+tags:
+  - To-Do List
+summary: Thêm công việc mới
+description: API để thêm một công việc mới vào danh sách
+
+parameters:
+  - name: title
+    in: formData
+    type: string
+    required: true
+    description: Tiêu đề công việc cần làm
+  - name: content
+    in: formData
+    type: string
+    required: false
+    description: Nội dung mô tả công việc
+  - name: deadline
+    in: formData
+    type: string
+    format: date
+    required: false
+    description: Hạn chót hoàn thành công việc (dd/MM/yyyy)
+  - name: active
+    in: formData
+    type: boolean
+    required: true
+    description: Trạng thái công việc 1-bật, 0-tắt
+  - name: category_id
+    in: formData
+    type: integer
+    required: false
+    description: ID danh mục chứa công việc
+
+responses:
+  201:
+    description: Thêm công việc thành công
+    schema:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+            title:
+              type: string
+            content:
+              type: string
+            deadline:
+              type: string
+              format: date
+            active:
+              type: boolean
+            category_id:
+              type: integer
+        success:
+          type: boolean
+  400:
+    description: Lỗi dữ liệu đầu vào
+    examples:
+      application/json:
+      examples1:
+          message: "Tiêu đề không được bỏ trống"
+      examples2:
+          message: "Hạn chót lớn hơn thời gian hiện tại"
