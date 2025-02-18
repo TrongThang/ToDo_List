@@ -7,9 +7,6 @@ from datetime import datetime
 from todo_app import *
 
 
-
-
-
 with app.app_context():
     pass
     # db.create_all()

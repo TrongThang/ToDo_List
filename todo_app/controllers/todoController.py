@@ -11,26 +11,34 @@ class ToDoController(Resource):
     @swag_from('docs/todo/get_todo.yaml')
     def get(self):
         cate_id = request.args.get("cate_id")
-        list_todo = utils.get_list_todo(cate_id)
+        todo_id = request.args.get("todo_id")
 
-        return jsonify(list_todo)
+        if todo_id is not None:
+            print("test")
+            data = utils.get_one_todo(todo_id)
+            return jsonify(data)
+
+        data = utils.get_list_todo(cate_id)
+        return jsonify(data)
+
 
     @swag_from('docs/todo/add_todo.yaml')
     def post(self):
-        title = request.form.get("title")
+        data = request.get_json()
+        title = data.get("title")
 
         if title == '':
             return jsonify({"message": "Tiêu đề không được bỏ trống"}), 400
 
-        content = request.form.get("content")
+        content = data.get("content")
 
-        deadline_str = request.form.get("deadline")
+        deadline_str = data.get("deadline")
         deadline = datetime.strptime(deadline_str, '%d/%m/%Y')
 
-        active_str = request.form.get("active")
+        active_str = data.get("active")
         active = True if (active_str == '1' or active_str.lower() == 'true') else False
 
-        category_id = request.form.get("category_id")
+        category_id = data.get("category_id")
 
         todo = ToDo(title=title, content=content, deadline=deadline, active=active, category_id=category_id)
 
@@ -40,19 +48,19 @@ class ToDoController(Resource):
 
     @swag_from('docs/todo/update_todo.yaml')
     def put(self):
-        todo_id = int(request.form.get("todo_id"))
-        title = request.form.get("title")
-        content = request.form.get("content")
-        deadline_str = request.form.get("deadline")
+        data = request.get_json()
+
+        todo_id = data.get("todo_id")
+        title = data.get("title")
+        content = data.get("content")
+        deadline_str = data.get("deadline")
         if not deadline_str or deadline_str == '':
             deadline = deadline_str
         else:
             deadline = datetime.strptime(deadline_str, '%d/%m/%Y%H%M%S')
 
-        active_str = request.form.get("active")
-        active = True if active_str == '1' else False
-        category_id = request.form.get("category_id")
-
+        active = data.get("active")
+        category_id = data.get("category_id")
         todo = ToDo(id=todo_id, title=title, content=content, deadline=deadline, active=active, category_id=category_id)
 
         result = utils.update_todo(todo)
