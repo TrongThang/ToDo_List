@@ -56,19 +56,29 @@ def add_todo(todo:ToDo):
         "id": todo.id,
         "title": todo.title,
         "content": todo.content,
-        "deadline": todo.deadline.strptime(datetime, "%d%m%y%H%M%S"),
+        "deadline": todo.deadline,
         "active": todo.active,
         "category": todo.category_id
     }
 
 def update_todo(todo_updated: ToDo):
     todo = ToDo.query.get(todo_updated.id)
+    print('cập nhật', todo_updated.id)
+    print('title', todo.title)
+    print('title update:', todo_updated.title)
+    print('content', todo.content)
+    print('content update:', todo_updated.content)
+    print('deadline', todo.deadline)
+
     time_accept = True
     if todo_updated.deadline:
-        time_accept = todo_updated.deadline > datetime.now()
+        deadline_time = datetime.strptime(todo_updated.deadline, "%Y-%m-%d %H:%M:%S")
+        current_time = datetime.now()
+
+        time_accept = deadline_time > current_time
 
     message = "Cập nhật thành công!"
-    if not todo:
+    if todo is None:
         message = "Không tồn tại công việc này"
         return message
     if not time_accept:
