@@ -7,21 +7,29 @@ class CategoryController(Resource):
     @swag_from('docs/category/get_category.yaml')
     def get(self):
         kw = request.args.get("kw")
-        result = get_categories(kw)
+        id = request.args.get("id")
+
+        if id is not None:
+            result = get_one_category(id)
+        else:
+            result = get_categories(kw)
+
         return jsonify(result)
 
     @swag_from('docs/category/add_category.yaml')
     def post(self):
-        name = request.form.get('name')
+        data= request.get_json()
+        name= data.get('name')
         result = add_categories(name)
         return jsonify(result)
 
     @swag_from('docs/category/update_category.yaml')
     def put(self):
-        cate_id = request.form.get('cate_id')
-        name = request.form.get('name')
+        data = request.get_json()
+        name = data.get('name')
+        id = data.get('id')
 
-        result = update_categories(cate_id, name)
+        result = update_categories(id, name)
         return jsonify(result)
     @swag_from('docs/category/delete_category.yaml')
     def delete(self):
