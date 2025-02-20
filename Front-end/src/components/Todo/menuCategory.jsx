@@ -8,7 +8,7 @@ export default function MenuCategory({ categories, category, setCategory, handle
             value={category}
             onChange={e => handleChangeCategory(e)}
         >
-            <option value=""> Tất cả </option>
+            <option value={0}> Tất cả </option>
             {categories.map((item, index) => {
             return (
                 <option key={index} value={item.id}>{ item.name }</option>

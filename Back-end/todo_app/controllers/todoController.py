@@ -11,6 +11,7 @@ class ToDoController(Resource):
     @swag_from('docs/todo/get_todo.yaml')
     def get(self):
         cate_id = request.args.get("cate_id")
+        kw = request.args.get("kw")
         todo_id = request.args.get("todo_id")
 
         if todo_id is not None:
@@ -18,7 +19,7 @@ class ToDoController(Resource):
             data = utils.get_one_todo(todo_id)
             return jsonify(data)
 
-        data = utils.get_list_todo(cate_id)
+        data = utils.get_list_todo(cate_id, kw)
         return jsonify(data)
 
 

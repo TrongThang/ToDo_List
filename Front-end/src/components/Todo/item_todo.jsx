@@ -5,10 +5,13 @@ import Swal from 'sweetalert2';
 import ModalAddEditToDo from "./modal_add_edit_todo";
 import ButtonModal from "../button_modal";
 import DeadlineStatus from "./deadline_status";
+import { Modal } from "bootstrap";
 
-export default function ItemToDo({ todo, index, categories, fetchData, setTodoEdit, setReport, report }) {
+export default function ItemToDo({ todo, index, categories, fetchData, setTodoEdit, setReport, report, cate_id }) {
     const [active, setActive] = useState(todo.active)
     const [status, setStatus] = useState('todo')
+    const [bgColor, setBgColor] = useState('none')
+    
     const now = moment();
     const deadline = moment(todo.deadline);
     const duration = moment.duration(deadline.diff(now));
@@ -18,28 +21,13 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
     const minutes = Math.floor(duration.asMinutes() % 60);
 
     useEffect(() => {
-        if (days <= 1) {
-            setStatus('prepare');
-        } else if (hours <= 12) {
-            setStatus('deadline');
-        } else if (hours <= 1) {
-            setStatus('important');
-        } else if (minutes <= 0) {
-            setStatus('false');
-        } else {
-            setStatus('todo');
-        }
-    }, [days, hours, minutes]);
-
-    const timeBeforeDeadline = () => {
-        if (days >= 1) {
-            return `${days}D ${hours}M ${minutes}`
-        } else if (hours >= 1) {
-            return `${hours}M ${minutes}`
-        } else {
-            return `${minutes} phút`
-        }
-    }
+        if (status === "todo") setBgColor('#4CAF50')
+        else if (status === "prepare") setBgColor('#2196F3')
+        else if (status === "deadline") setBgColor('#FFC107')
+        else if (status === "important") setBgColor('#FF9800')
+        else if (status === "expired") setBgColor('#F44336')
+        else setBgColor('#fff')
+    }, [status])
 
     const handleDelete = async () => {
         const result = await Swal.fire({
@@ -68,17 +56,18 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
 
     const handleActive = async (e) => {
         try {
-            alert('update')
-            // let value = e.target.checked;
-            // if (value) {
-            //     setReport({ ...report, finished: report.finished + 1 })
-            // } else {
-            //     setReport({ ...report, finished: report.finished - 1 })
-            // }
-            // const data = await axios.put('/todo', {
-            //     id: todo.id,
-            //     active: value
-            // })
+            let value = e.target.checked;
+            if (value) {
+                setReport({ ...report, finished: report.finished + 1 })
+            } else {
+                setReport({ ...report, finished: report.finished - 1 })
+            }
+            const data = await axios.put('/todo', {
+                id: todo.id,
+                active: value
+            })
+
+            fetchData()
         } catch (error) {
             console.log(error)
         }
@@ -95,6 +84,7 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
                 deadline: deadlineFormatted
             })
             console.log("Formatted Deadline:", deadlineFormatted);
+            fetchData()
 
         } catch (error) {
             console.log(error)
@@ -107,6 +97,8 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
                 id: todo.id,
                 category_id: e.target.value
             })
+
+            fetchData()
         } catch (error) {
             console.log(error)
         }
@@ -114,25 +106,48 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
 
     return (
         <>
-            <div class="mt-4 item-todo-show" onClick={handleActive}>
-                <div class="d-flex inline">
-                    <div class="input-group">
-                        <input
-                            type="checkbox"
-                            class="form-check-input m-2 checkbox-todo"
-                            defaultChecked={todo.active ? true : false}
-                            onChange={e => handleActive(e)}
-                            style={{ width: "25px", height: "25px", }}
-                        />
-                        <input
-                            type="text"
-                            class="form-control"
-                            value={todo.title}
-                        />
-                        <select class="form-select"
-                            value={todo.category.id}
-                            style={{ width: "100px" }}
+            <div
+                class="mt-4 position-relative"
+                onClick={(e) => {
+                    if (
+                        e.target.tagName !== "INPUT" &&
+                        e.target.tagName !== "SELECT" &&
+                        e.target.tagName !== "BUTTON"
+                    ) {
+                        setTodoEdit(todo.id);
+                        const modalElement = document.getElementById("ToDoModal");
+                        if (modalElement) {
+                            const modalInstance = new Modal(modalElement);
+                            modalInstance.show();
+                        }
+                    }
+                }}
+            >
+                <div class="mb-5 p-2 todo" style={{backgroundColor: bgColor}}>
+                    <input
+                        type="datetime-local"
+                        class="datetime-todo"
+                        defaultChecked={todo.active ? true : false}
+                        onChange={e => handleDeadline(e)}
+                        value={todo.deadline}
+                        min={moment().format("YYYY-MM-DD HH:mm")}
+                        style={{ width: "200px" }}
+                        onClick={e => e.stopPropagation}
+                    />
+                    <DeadlineStatus todo={todo} deadline={deadline} status={status} setStatus={setStatus}/>
+
+                    {/* TITLE */}
+                    <h4 style={{ textAlign: "left", wordWrap: "break-word", maxWidth: "15vw" }}>
+                        {todo.title}
+                    </h4>
+
+                    <div className="custom-select">
+                        <select 
+                            className="form-select"
+                            value={cate_id}
+                            style={{ width: "10vw", height: "6vh"}}
                             onChange={(e) => handleCategory(e)}
+                            onClick={e => e.stopPropagation}
                         >
                             {categories.map((item, indexCate) => {
                                 return (
@@ -140,31 +155,29 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
                                 )
                             })}
                         </select>
-                        
-                        <ButtonModal
-                            target="ToDoModal"
-                            title="Sửa"
-                            action="edit"
-                            categories={categories}
-                            fetchData={fetchData}
-                            onClick={() => setTodoEdit(todo.id)}
-                        />
-                        <button className="btn btn-danger" onClick={handleDelete}>
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                            {/* {timeBeforeDeadline()} 🔥 */}
                     </div>
+                    <div className="checked-finished">
+                        <label for="checked"></label>
                         <input
-                            type="datetime-local"
-                            class="t m-2"
-                            defaultChecked={todo.active ? true : false}
-                            onChange={e => handleDeadline(e)}
-                            value={todo.deadline}
-                            min={moment().format("YYYY-MM-DD HH:mm:ss")}
-                        // onClick={handleDeadline}
+                            type="checkbox"
+                            class="custom-checkbox"
+                            checked={todo.active}
+                            onChange={e => handleActive(e)}
+                            onClick={e => {
+                                // setStatus('finished')
+                                e.stopPropagation()
+                            }}
+                            style={{ width: "50px", height: "25px" }}   
+                            name="checked"
                         />
-                    <DeadlineStatus deadline={deadline} />
+                    </div>
                 </div>
+                <span className="icon-delete-todo translate-middle" onClick={(e) => {
+                    e.stopPropagation()
+                    handleDelete()
+                }}>
+                    <i class="fa-solid fa-delete-left"></i>
+                </span>
             </div>
         </>
     )

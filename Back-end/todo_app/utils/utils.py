@@ -3,7 +3,7 @@ from todo_app.models.Category import Category
 from todo_app.models.ToDo import ToDo
 from datetime import datetime
 from sqlalchemy.orm import joinedload
-from sqlalchemy import desc
+from sqlalchemy import desc, or_
 
 def format_datetime(value):
     """Chuyển datetime về định dạng 'YYYY-MM-DDTHH:mm' cho frontend."""
@@ -14,11 +14,14 @@ def format_datetime(value):
 #TO DO
 """
 """
-def get_list_todo(cate_id = None):
+def get_list_todo(cate_id = None, kw = None):
     query = db.select(ToDo).options(joinedload(ToDo.category)).order_by(desc(ToDo.created_date))
-
+    print('tìm kiếm')
     if cate_id:
         query = query.filter_by(category_id=cate_id)
+    if kw:
+        print('Tìm kiếm bằng keyword')
+        query = query.filter(or_(ToDo.title.ilike(f'%{kw}%'), ToDo.content.ilike(f'%{kw}%')))
 
     list_todo = db.session.execute(query).scalars().all()
 

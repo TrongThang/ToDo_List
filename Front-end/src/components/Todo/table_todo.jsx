@@ -5,6 +5,8 @@ import axios from "../../services/customAxios";
 import ButtonModal from "../button_modal"
 import ModalAddEditToDo from "./modal_add_edit_todo";
 import CategoryModalAddEdit from "../Category/category_modal_add_edit";
+import CategoryBackground from "./categoryBackground";
+import SearchToDo from "./search_todo";
 
 const {
     fetchAllToDo
@@ -45,7 +47,7 @@ export default function TableToDo() {
     const fetchData = async () => {
         try {
             const cate_id = formData.cate_id;
-            let urlCate = `/todo` + (category ? '?cate_id=' + category : '');
+            let urlCate = `/todo` + (category != 0 ? '?cate_id=' + category : '');
             console.log(urlCate)
             const data = await axios.get(urlCate)
 
@@ -60,7 +62,7 @@ export default function TableToDo() {
                 finished: totalFinished,
                 total: data.length
             })
-
+            console.log("fetch dữ liệu mới")
         } catch (error) {
             console.log("Lỗi:", error)
         }
@@ -97,58 +99,51 @@ export default function TableToDo() {
                             action="add"
                             color='warning'
                         />
-
                     </div>
                     <div className="stats-numbers">
                         <p id="numbers"> {report.finished} / {report.total}</p>
                     </div>
                 </div>
+                <div className="ms-5">
+                    <MenuCategory
+                        categories={categories}
+                        category={category}
+                        setCategory={setCategory}
+                        handleChange={handleChange}
+                    />
+                    <SearchToDo setListToDo={setListToDo} category={category} />
+                    </div>
             </div>
             <div className="row">
-                <div className="col-2">
-                </div>
+                {/* Khu vực Danh sách ToDo và Menu */}                    
+                <ModalAddEditToDo
+                    target="ToDoModal"
+                    title="Thêm Công Việc"
+                    action="Thêm"
+                    categories={categories}
+                    fetchData={fetchData}
+                    todo_id={todoEdit}
+                    setTodoEdit={setTodoEdit}
+                />
 
-                {/* Khu vực Danh sách ToDo và Menu */}
-                <div className="col-7">
-                    
-                    <ModalAddEditToDo
-                        target="ToDoModal"
-                        title="Thêm Công Việc"
-                        action="Thêm"
-                        categories={categories}
-                        fetchData={fetchData}
-                        todo_id={todoEdit}
-                    />
+                <CategoryModalAddEdit fetchData={fetchData} categories={categories} />
 
-                    <CategoryModalAddEdit fetchData={fetchData} categories={categories} />
-                    <div>
-                        {listToDo.map((item, index) => (
-                            <ItemToDo
-                                key={index}
-                                todo={item}
-                                index={index}
-                                categories={categories}
-                                fetchData={fetchData}
-                                setTodoEdit={setTodoEdit}
-                                setReport={setReport}
-                                report={report}
-                            />
-                        ))}
-                    </div>
-                </div>
-
-                {/* Khu vực Lọc */}
-                <div className="col-2">
-                    <div className="mt-2">
-                        <MenuCategory
+                {/* DANH SÁCH CATEGORY VÀ TO DO LIST */}
+                <div className="row col-12">
+                    {categories.map((item, index) => {
+                        return <CategoryBackground
+                            listToDo={listToDo}
                             categories={categories}
-                            category={category}
-                            setCategory={setCategory}
-                            handleChange={handleChange}
+                            fetchData={fetchData}
+                            setTodoEdit={setTodoEdit}
+                            setReport={setReport}
+                            report={report}
+                            categoryCurrent={item}
                         />
-                    </div>
+                    })}
                 </div>
             </div>
+            
         </>
     )
 }

@@ -3,7 +3,7 @@ import ContentAddEditToDo from "./content_add_edit_todo";
 import axios from "../../services/customAxios";
 import Swal from "sweetalert2";
 
-export default function ModalAddEditToDo({ fetchData, title, target, action, categories, todo_id = null }) {    
+export default function ModalAddEditToDo({ fetchData, title, target, action, categories, todo_id = null, setTodoEdit }) {    
     const [formData, setFormData] = useState({
         id: '',
         title: '',
@@ -20,6 +20,8 @@ export default function ModalAddEditToDo({ fetchData, title, target, action, cat
 
     useEffect(() => {
         if (todo_id == null) {
+            console.log(123);
+            
             setSetting({
                 title: "Thêm công việc mới",
                 action: "Thêm"
@@ -140,6 +142,7 @@ export default function ModalAddEditToDo({ fetchData, title, target, action, cat
     
         const handleModalClose = () => {
             resetForm();
+            setTodoEdit(null)
         }
     
         modalElement.addEventListener('hidden.bs.modal', handleModalClose);
@@ -159,7 +162,6 @@ export default function ModalAddEditToDo({ fetchData, title, target, action, cat
                 addToDo()
                 console.log('add')
             }
-            fetchData()
         } catch (error) {
             console.log(error.message)
         }

@@ -6,17 +6,34 @@ from todo_app.models.ToDo import ToDo
 from todo_app import db
 from sqlalchemy.orm import joinedload
 
+def format_datetime(value):
+    """Chuyển datetime về định dạng 'YYYY-MM-DDTHH:mm' cho frontend."""
+    if value:
+        return value.strftime('%Y-%m-%dT%H:%M')
+    return None
+
+
 def get_categories(kw = None):
     print(kw)
+    query  = Category.query.options(joinedload(Category.todo_list))
+
     if kw:
-        cates = Category.query.filter(Category.name.ilike(f'%{kw}%')).all()
-    else:
-        cates = Category.query.all()
+        query  = Category.query.filter(Category.name.ilike(f'%{kw}%'))
+
+    cates = query.all()
 
     return [
         {
             "id": c.id,
-            "name": c.name
+            "name": c.name,
+            "todos":  [{
+                "id": t.id, "title": t.title,
+                "content": t.content,
+                "created_date": t.created_date,
+                "deadline": format_datetime(t.deadline),
+                "active": t.active,
+            } 
+            for t in c.todo_list]  # Trả về danh sách todo
         }
         for c in cates
     ]
