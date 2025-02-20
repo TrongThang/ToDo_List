@@ -17,12 +17,12 @@ export default function DeadlineStatus({deadline, setStatus, status, todo}) {
             const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
             const minutes = Math.floor((diff / (1000 * 60)) % 60);
 
-            if (todo.active) setStatus("finished"); 
+            if (todo.active) setStatus("finished");
             else if (days >= 1) setStatus("todo");
             else if (hours >= 12) setStatus("prepare");
             else if (hours >= 1) setStatus("deadline");
             else if (minutes > 0) setStatus("important");
-            else if (minutes < 0) setStatus("expired");
+            else if (minutes <= 0) setStatus("expired");
             else setStatus(null)
 
             return { days, hours, minutes };

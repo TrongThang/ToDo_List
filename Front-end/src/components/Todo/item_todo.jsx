@@ -9,7 +9,7 @@ import { Modal } from "bootstrap";
 
 export default function ItemToDo({ todo, index, categories, fetchData, setTodoEdit, setReport, report, cate_id }) {
     const [active, setActive] = useState(todo.active)
-    const [status, setStatus] = useState('todo')
+    const [status, setStatus] = useState('')
     const [bgColor, setBgColor] = useState('none')
     
     const now = moment();
@@ -21,6 +21,7 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
     const minutes = Math.floor(duration.asMinutes() % 60);
 
     useEffect(() => {
+        console.log('status:', status)
         if (status === "todo") setBgColor('#4CAF50')
         else if (status === "prepare") setBgColor('#2196F3')
         else if (status === "deadline") setBgColor('#FFC107')
@@ -137,7 +138,7 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
                     <DeadlineStatus todo={todo} deadline={deadline} status={status} setStatus={setStatus}/>
 
                     {/* TITLE */}
-                    <h4 style={{ textAlign: "left", wordWrap: "break-word", maxWidth: "15vw" }}>
+                    <h4 style={{ textAlign: "left", wordWrap: "break-word", maxWidth: "65%" }}>
                         {todo.title}
                     </h4>
 
@@ -176,7 +177,10 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
                     e.stopPropagation()
                     handleDelete()
                 }}>
-                    <i class="fa-solid fa-delete-left"></i>
+                    {/* <i class="fa-solid fa-delete-left tag-delete"></i> */}
+                    <div className="bg-white-icon-delete">
+                        <i class="fa-solid fa-delete-left tag-delete"></i>
+                    </div>
                 </span>
             </div>
         </>

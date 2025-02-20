@@ -48,11 +48,9 @@ export default function TableToDo() {
         try {
             const cate_id = formData.cate_id;
             let urlCate = `/todo` + (category != 0 ? '?cate_id=' + category : '');
-            console.log(urlCate)
             const data = await axios.get(urlCate)
 
             const dataCate = await axios.get("/category")
-            console.log("categories:", dataCate)
             setListToDo(data)
             setCategories(dataCate)
             
@@ -62,7 +60,6 @@ export default function TableToDo() {
                 finished: totalFinished,
                 total: data.length
             })
-            console.log("fetch dữ liệu mới")
         } catch (error) {
             console.log("Lỗi:", error)
         }
@@ -80,7 +77,7 @@ export default function TableToDo() {
 
     return (
         <>
-            <div className="container-todo">
+            <div className="container-todo mb-3">
                 <div className="stats-container">
                     <div className="detail-todo" >
                         <h1>Hoàn Thành</h1>
@@ -114,7 +111,7 @@ export default function TableToDo() {
                     <SearchToDo setListToDo={setListToDo} category={category} />
                     </div>
             </div>
-            <div className="row">
+            <div style={{padding: "0px"}}>
                 {/* Khu vực Danh sách ToDo và Menu */}                    
                 <ModalAddEditToDo
                     target="ToDoModal"
@@ -130,17 +127,21 @@ export default function TableToDo() {
 
                 {/* DANH SÁCH CATEGORY VÀ TO DO LIST */}
                 <div className="row col-12">
-                    {categories.map((item, index) => {
-                        return <CategoryBackground
-                            listToDo={listToDo}
-                            categories={categories}
-                            fetchData={fetchData}
-                            setTodoEdit={setTodoEdit}
-                            setReport={setReport}
-                            report={report}
-                            categoryCurrent={item}
-                        />
-                    })}
+                    
+                        {categories.map((item, index) => {
+                            return(
+                            <div className="col-lg-3 col-sm-12 col-md-6" style={{maxWidth: "350px"}}>
+                                <CategoryBackground
+                                    listToDo={listToDo}
+                                    categories={categories}
+                                    fetchData={fetchData}
+                                    setTodoEdit={setTodoEdit}
+                                    setReport={setReport}
+                                    report={report}
+                                    categoryCurrent={item}
+                                />
+                            </div>)
+                        })}
                 </div>
             </div>
             

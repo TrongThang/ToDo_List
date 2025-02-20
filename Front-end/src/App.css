@@ -1,7 +1,7 @@
 * {
     font-family: 'Poppins', sans-serif;
-    margin: 0;
-    padding: 0;
+    /* margin: 0;
+    padding: 0; */
 }
 
 body {
@@ -65,12 +65,14 @@ body {
     padding-bottom: 0px;
     padding-top: 10px;
     border-radius: 20px;
-    border: 2px solid purple;
+    /* border: 2px solid purple; */
     display: flex;
     gap: 20px;
     width:40%;
     justify-content: space-between;
     align-items: center;
+    /* box-shadow: rgba(7, 34, 164, 0.59) 0px 5px 15px 0px; */
+    box-shadow: rgba(244, 246, 255, 0.59) 0px -5px 15px 0px;
 }
 
 .detail-todo {
@@ -109,8 +111,7 @@ body {
     font-weight: bold;
 }
 
-input[type="checkbox"]
-{
+input[type="checkbox"] {
     position: relative;
     width: 5rem;
     height: 2.5rem;
@@ -119,28 +120,41 @@ input[type="checkbox"]
     outline: none;
     border-radius: 2.5rem;
     box-shadow: inset 0 0 5px rgba(0,0,0,.2);
+    transition: background 0.3s;
+    cursor: pointer;
 }
 
-input[type="checkbox"]:hover
-{
+input[type="checkbox"]:hover {
     border: 1px solid #1f3ba0;
     background-color: #2375f0;
 }
 
-input:checked[type="checkbox"]
-{
+input:checked[type="checkbox"] {
     background: #03a9f4;
 }
 
-input:checked[type="checkbox"]::before
-{
-    content: "✔"; /* Dấu check */
-    font-size: 18px;
-    color: white;
+input[type="checkbox"]::before {
+    content: '';
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    top: 0;
+    left: 0;
+    background: #fff;
+    transform: scale(1.1);
+    transition: .5s;
+    box-shadow: 0 2px 5px rgba(0,0,0,.2);
+    border: 1px solid #22151596;
+}
+
+input:checked[type="checkbox"]::before {
+    left: 55%;
+    content: '✓';
+    color: #fff;
+    font-weight: bold;
+    padding: 0 7px;
+    background: #bef104;
 }
 
 /*  */
@@ -154,9 +168,9 @@ input[type="datetime-local"]
 .background-calender {
     /* border: 2px solid #2D336B;    */
     border-radius: 25px;
-    width: 400px;
-    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
-    /* height: 400px; */
+    max-width: 350px;
+    /* box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px; */
+    box-shadow: rgba(60, 64, 67, 0.3) 12px 11px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
 }
 
 .title-calender{
@@ -198,7 +212,7 @@ input[type="datetime-local"]
 .deadline-status{
     position: absolute;
     top: 3vh;
-    left: 16vw;
+    right: 0;
 }
 
 .datetime-todo{
@@ -210,4 +224,18 @@ input[type="datetime-local"]
 
 .custom-select select {
     border: 1px solid black;
+}
+
+.bg-white-icon-delete {
+    background: #fff;
+    width: 20px;
+    height: 20px;
+    /* left: 1vw; */
+}
+
+.tag-delete {
+    position: absolute;
+    top: 0;
+    right: 10%;
+    text-shadow: 2px 3px 2px white;
 }
