@@ -21,7 +21,6 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
     const minutes = Math.floor(duration.asMinutes() % 60);
 
     useEffect(() => {
-        console.log('status:', status)
         if (status === "todo") setBgColor('#4CAF50')
         else if (status === "prepare") setBgColor('#2196F3')
         else if (status === "deadline") setBgColor('#FFC107')
@@ -74,11 +73,26 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
         }
     }
 
+    const handleThumbtack = async (e) => {
+        try {
+            let value = e.target.checked;
+
+            const data = await axios.put('/todo', {
+                id: todo.id,
+                thumbtack: value
+            })
+
+            fetchData()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     const handleDeadline = async (e) => {
         try {
             var deadlineUpdated = e.target.value;
 
-            const deadlineFormatted = moment(deadlineUpdated).format("YYYY-MM-DD HH:mm:ss");
+            const deadlineFormatted = moment(deadlineUpdated).utc().format("YYYY-MM-DD HH:mm:ss");
 
             const data = await axios.put('/todo', {
                 id: todo.id,
@@ -124,21 +138,33 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
                     }
                 }}
             >
-                <div class="mb-5 p-2 todo" style={{backgroundColor: bgColor}}>
-                    <input
-                        type="datetime-local"
-                        class="datetime-todo"
-                        defaultChecked={todo.active ? true : false}
-                        onChange={e => handleDeadline(e)}
-                        value={todo.deadline}
-                        min={moment().format("YYYY-MM-DD HH:mm")}
-                        style={{ width: "200px" }}
-                        onClick={e => e.stopPropagation}
-                    />
+                <div class="mb-5 p-2 todo" style={{ backgroundColor: bgColor }}>
+                    <div
+                        className="check-thumbtack"
+                    >
+                        <input
+                            type="checkbox"
+                            name="thumbtack"
+                            checked={todo.thumbtack}
+                            onClick={(e) => handleThumbtack(e)}
+                        />
+                        {/* <span><i class="fa-solid fa-thumbtack"></i></span> */}
+                    </div>
+                    <div className="datetime-todo">
+                        <input
+                            type="datetime-local"
+                            defaultChecked={todo.active ? true : false}
+                            onChange={e => handleDeadline(e)}
+                            value={todo.deadline}
+                            min={moment().format("YYYY-MM-DD HH:mm")}
+                            style={{ width: "200px" }}
+                            onClick={e => e.stopPropagation}
+                        />
+                    </div>
                     <DeadlineStatus todo={todo} deadline={deadline} status={status} setStatus={setStatus}/>
 
                     {/* TITLE */}
-                    <h4 style={{ textAlign: "left", wordWrap: "break-word", maxWidth: "65%" }}>
+                    <h4 style={{ textAlign: "left", wordWrap: "break-word", maxWidth: "12vw", paddingTop: "10px" }}>
                         {todo.title}
                     </h4>
 
@@ -146,7 +172,7 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
                         <select 
                             className="form-select"
                             value={cate_id}
-                            style={{ width: "10vw", height: "6vh"}}
+                            style={{ width: "50%", height: "6vh", textWrap: "wrap"}}
                             onChange={(e) => handleCategory(e)}
                             onClick={e => e.stopPropagation}
                         >

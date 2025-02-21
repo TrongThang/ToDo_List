@@ -8,8 +8,13 @@ export default function DeadlineStatus({deadline, setStatus, status, todo}) {
             const now = new Date();
             const diff = new Date(deadline) - now;
             
+            if (todo.active) {
+                setStatus("finished")
+                return { days: 0, hours: 0, minutes: 0 };
+            }
+
             if (diff <= 0) {
-                setStatus("expired");
+                setStatus("expired");   
                 return { days: 0, hours: 0, minutes: 0 };
             }
             
@@ -17,8 +22,7 @@ export default function DeadlineStatus({deadline, setStatus, status, todo}) {
             const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
             const minutes = Math.floor((diff / (1000 * 60)) % 60);
 
-            if (todo.active) setStatus("finished");
-            else if (days >= 1) setStatus("todo");
+            if (days >= 1) setStatus("todo");
             else if (hours >= 12) setStatus("prepare");
             else if (hours >= 1) setStatus("deadline");
             else if (minutes > 0) setStatus("important");
@@ -29,7 +33,7 @@ export default function DeadlineStatus({deadline, setStatus, status, todo}) {
         };
 
         setTimeLeft(calculateTimeLeft());
-        const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 60000);
+        const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), deadline);
 
         return () => clearInterval(timer);
     }, [deadline]);
@@ -56,6 +60,6 @@ export default function DeadlineStatus({deadline, setStatus, status, todo}) {
     };
 
     return (
-        <span style={{width: "130px", padding: "0px"}} className={`${getBackgroundClass()} deadline-status`}>{timeDisplay()}</span>
+        <span style={{width: "8vw", padding: "0px"}} className={`${getBackgroundClass()} deadline-status`}>{timeDisplay()}</span>
     );
 }

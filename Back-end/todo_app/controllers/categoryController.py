@@ -7,29 +7,30 @@ from todo_app.services.categoryService import *
 class CategoryController(Resource):
     @swag_from('docs/category/get_category.yaml')
     def get(self):
-        kw = request.args.get("kw")
+        kw_todo = request.args.get("kw_todo")
         id = request.args.get("id")
 
-        if id is not None:
-            result = get_one_category(id)
-        else:
-            result = get_categories(kw)
+        # if id is not None:
+        #     result = get_one_category(id)
+        # else:
+        result = get_categories(id=id, kw_todo=kw_todo)
 
         return jsonify(result)
 
     @swag_from('docs/category/add_category.yaml')
     def post(self):
         data= request.get_json()
-        name= data.get('name')
+        name= data.get('name') if data.get('name') is None else data.get('name').strip()
         result = add_categories(name)
         return jsonify(result)
 
     @swag_from('docs/category/update_category.yaml')
     def put(self):
         data = request.get_json()
-        name = data.get('name')
+        name = data.get('name') if data.get('name') is None else data.get('name').strip()
         id = data.get('id')
-
+        print('id:', id)
+        print('name:', name)
         result = update_categories(id, name)
         return jsonify(result)
     @swag_from('docs/category/delete_category.yaml')

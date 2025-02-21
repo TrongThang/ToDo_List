@@ -33,6 +33,7 @@ def get_list_todo(cate_id = None, kw = None):
             "created_date": todo.created_date,
             "deadline": format_datetime(todo.deadline),
             "active": todo.active,
+            "thumbtack": todo.thumbtack,
             "category": {
                 "id": todo.category.id,
                 "name": todo.category.name
@@ -50,6 +51,7 @@ def get_one_todo(todo_id):
             "content": todo.content,
             "deadline": format_datetime(todo.deadline),
             "active": todo.active,
+            "thumbtack": todo.thumbtack,
             "category": todo.category_id
         }
 
@@ -58,6 +60,8 @@ def get_one_todo(todo_id):
 def add_todo(todo:ToDo):
     if not todo.category_id:
         return { "title": todo.title, "deadline":todo.deadline, "message": "Danh mục cho đầu việc là bắt buộc" }
+    
+    
     new_todo = db.session.add(todo)
     db.session.commit()
 
@@ -67,6 +71,7 @@ def add_todo(todo:ToDo):
         "content": todo.content,
         "deadline": todo.deadline,
         "active": todo.active,
+        "thumbtack": todo.thumbtack,
         "category": todo.category_id
     }
 
@@ -74,12 +79,18 @@ def update_todo(todo_updated: ToDo):
     todo = ToDo.query.get(todo_updated.id)
 
     time_accept = True
-    if todo_updated.deadline:
-        deadline_time = datetime.strptime(todo_updated.deadline, "%Y-%m-%d %H:%M:%S")
-        current_time = datetime.now()
-        time_accept = deadline_time > current_time
+
+    # if todo_updated.deadline:
+    #     deadline_time = datetime.strptime(todo_updated.deadline, "%Y-%m-%d %H:%M:%S")
+    #     current_time = datetime.now()
+    #     time_accept = deadline_time > current_time
+
+    # print('deadline_time:', deadline_time)
+    # print('current_time:', current_time)
+    # print('time_accept:', deadline_time > current_time)
 
     message = "Cập nhật thành công!"
+    
     if todo is None:
         message = "Không tồn tại công việc này"
         return { "message": message, "errorCode": -1 }
@@ -87,8 +98,14 @@ def update_todo(todo_updated: ToDo):
     if not time_accept:
         message = "Deadline phải lớn hơn ngày giờ hiện tại"
         return { "message": message, "errorCode": 3 }
+    
+    print('title - up:', todo_updated.title)
+    print('content - up:', todo_updated.content)
+
     if todo_updated.active is not None:
         todo.active = todo_updated.active
+    if todo_updated.thumbtack is not None:
+        todo.thumbtack = todo_updated.thumbtack
     if todo_updated.title is not None:
         todo.title = todo_updated.title
     if todo_updated.content is not None:
@@ -109,6 +126,7 @@ def update_todo(todo_updated: ToDo):
             "content": todo.content,
             "deadline": todo.deadline,
             "active": todo.active,
+            "thumbtack": todo.thumbtack,
             "category": todo.category_id
         },
         message: message

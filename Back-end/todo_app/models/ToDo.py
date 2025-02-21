@@ -9,8 +9,9 @@ class ToDo(BaseModel):
     title = Column(String(100), nullable=False)
     content = Column(String(255))
     deadline = Column(DateTime)
+    thumbtack = Column(Boolean, default=False)
     created_date = Column(DateTime, default=datetime.now())
-    active = Column(Boolean, default=True)
+    active = Column(Boolean, default=False)
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship('Category', back_populates='todo_list')
 

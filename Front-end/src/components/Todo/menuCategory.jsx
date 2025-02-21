@@ -1,15 +1,19 @@
-export default function MenuCategory({ categories, category, setCategory, handleChange }) {
+export default function MenuCategory({ allCate, category, setCategory }) {
     const handleChangeCategory = (e) => {
-        handleChange(e)
+        const value = e.target.value;
+        if (value <= 0) {
+            setCategory(null)
+        }
+        setCategory(e.target.value);
     }
     return (
         <select id="cate_id" name="cate_id"
             className="form-select col-4 w-75"
             value={category}
-            onChange={e => handleChangeCategory(e)}
+            onChange={(e) => setCategory(e.target.value)}
         >
             <option value={0}> Tất cả </option>
-            {categories.map((item, index) => {
+            {allCate.map((item, index) => {
             return (
                 <option key={index} value={item.id}>{ item.name }</option>
                 )

@@ -1,8 +1,8 @@
 import axios from "../../services/customAxios"
 import ItemCategory from "./item_category"
 
-export default function CategoryContentAddEdit({ formData, categories, handleChange, fetchData, setCateEdit }) {
-
+export default function CategoryContentAddEdit({ formData, categories, handleChange, fetchData, setCateEdit, setFormData, cateEdit }) {
+    
     return (
         <>
             {/* Change Data */}
@@ -21,7 +21,7 @@ export default function CategoryContentAddEdit({ formData, categories, handleCha
                 <div className="col-12">
                     {categories.map((item, index) => {
                         return (
-                            <ItemCategory id={item.id} name={item.name} fetchData={fetchData} key={index} setCateEdit={setCateEdit} />
+                            <ItemCategory id={item.id} name={item.name} fetchData={fetchData} key={index} setCateEdit={setCateEdit} setFormData={setFormData} totalTodo={item.todos.length} cateEdit={cateEdit}/>
                         )
                     })}
                 </div>

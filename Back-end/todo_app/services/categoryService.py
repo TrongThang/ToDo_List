@@ -4,7 +4,8 @@ from sqlalchemy import func
 from todo_app.models.Category import Category
 from todo_app.models.ToDo import ToDo
 from todo_app import db
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, aliased
+from sqlalchemy import desc, or_
 
 def format_datetime(value):
     """Chuyển datetime về định dạng 'YYYY-MM-DDTHH:mm' cho frontend."""
@@ -13,32 +14,43 @@ def format_datetime(value):
     return None
 
 
-def get_categories(kw = None):
-    print(kw)
-    query  = Category.query.options(joinedload(Category.todo_list))
-
-    if kw:
-        query  = Category.query.filter(Category.name.ilike(f'%{kw}%'))
+def get_categories(id = None, kw_todo = None):
+    query  = Category.query.outerjoin(ToDo).options(joinedload(Category.todo_list))
+    
+    if id:
+        query = query.filter(Category.id == id)
 
     cates = query.all()
-
-    return [
-        {
+    
+    result = []
+    for c in cates:
+        todos = c.todo_list
+        if kw_todo:
+            todos = [t for t in todos if kw_todo.lower() in t.title.lower() or kw_todo.lower() in t.content.lower()]
+        
+        result.append({
             "id": c.id,
-            "name": c.name,
-            "todos":  [{
-                "id": t.id, "title": t.title,
+            "name": c.name.upper(),
+            "todos": [{
+                "id": t.id,
+                "title": t.title,
                 "content": t.content,
                 "created_date": t.created_date,
                 "deadline": format_datetime(t.deadline),
                 "active": t.active,
-            } 
-            for t in c.todo_list]  # Trả về danh sách todo
-        }
-        for c in cates
-    ]
+                "thumbtack": t.thumbtack,
+            } for t in todos]
+        })  
 
-def get_one_category(id = None):
+    return result
+
+def get_one_category(id = None, kw = None):
+    query  = Category.query.options(joinedload(Category.todo_list)).order_by(desc(ToDo.created_date))
+
+    if kw:
+        query  = query.filter(Category.name.ilike(f'%{kw}%'))
+
+    cates = query.all()
     if id is not None:
         cate = Category.query.get(id)
         return {
@@ -51,9 +63,11 @@ def get_one_category(id = None):
 
 
 def add_categories(name):
+    print('name', name)
     if not name:
         message = "Tên danh mục là bắt buộc"
         return message
+    print('sau:', name)
 
     cate_new = Category(name=name)
     db.session.add(cate_new)

@@ -28,15 +28,16 @@ class ToDoController(Resource):
         data = request.get_json()
         title = data.get("title")
 
-        if title == '':
-            return jsonify({"message": "Tiêu đề không được bỏ trống"}), 400
+        if title == '' or title is None:
+            return jsonify({"message": "Tiêu đề không được bỏ trống", "success":False}), 400
 
         content = data.get("content")
         deadline = data.get("deadline")
-        active = True
+        active = False
+        thumbtack = False
         category_id = data.get("category_id")
 
-        todo = ToDo(title=title, content=content, deadline=deadline, active=active, category_id=category_id)
+        todo = ToDo(title=title, content=content, deadline=deadline, active=active, category_id=category_id, thumbtack = thumbtack)
 
         new_todo = utils.add_todo(todo)
         print("Thêm thành công!!")
@@ -47,14 +48,18 @@ class ToDoController(Resource):
         data = request.get_json()
 
         todo_id = data.get("id")
-        print('todo_id:', todo_id)
-        title = data.get("title")
-        content = data.get("content")
+        print('id update:', todo_id)
+        title = None if (data.get("title") is None) else data.get("title").strip()
+        content =  None if (data.get("content") is None) else data.get("content").strip()
+        # title = data.get("title")
+        # content = data.get("content")
+        print('title:', title)
+        print('content:', content)
         deadline = data.get("deadline")
-
+        thumbtack = data.get("thumbtack")
         active = data.get("active")
         category_id = data.get("category_id")
-        todo = ToDo(id=todo_id, title=title, content=content, deadline=deadline, active=active, category_id=category_id)
+        todo = ToDo(id=todo_id, title=title, content=content, deadline=deadline, active=active, category_id=category_id, thumbtack=thumbtack)
 
         result = utils.update_todo(todo)
 

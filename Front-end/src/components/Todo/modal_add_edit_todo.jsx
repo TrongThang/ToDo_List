@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import ContentAddEditToDo from "./content_add_edit_todo";
 import axios from "../../services/customAxios";
 import Swal from "sweetalert2";
+import moment from "moment";
 
 export default function ModalAddEditToDo({ fetchData, title, target, action, categories, todo_id = null, setTodoEdit }) {    
     const [formData, setFormData] = useState({
@@ -13,6 +14,13 @@ export default function ModalAddEditToDo({ fetchData, title, target, action, cat
         category: '',
         category_id: ''
     })
+
+    const [errors, setErrors] = useState({
+        title: '',
+        category_id: '',
+        deadline: ''
+    });    
+
     const [setting, setSetting] = useState({
         title: '',
         action: ''
@@ -90,7 +98,7 @@ export default function ModalAddEditToDo({ fetchData, title, target, action, cat
         }
 
         const deadlineFormatted = formData.deadline
-            ? new Date(formData.deadline).toISOString().slice(0, 19).replace("T", " ")
+            ? moment(formData.deadline).format("YYYY-MM-DD HH:mm:ss")
             : null;
         
         const data = axios.post("/todo", {
@@ -103,7 +111,7 @@ export default function ModalAddEditToDo({ fetchData, title, target, action, cat
         
         if (data) {
             resetForm()
-            fetchData()
+            await fetchData()
         }
     }
 
@@ -120,7 +128,7 @@ export default function ModalAddEditToDo({ fetchData, title, target, action, cat
         }
 
         const deadlineFormatted = formData.deadline
-            ? new Date(formData.deadline).toISOString().slice(0, 19).replace("T", " ")
+            ? moment(formData.deadline).format("YYYY-MM-DD HH:mm:ss")
             : null;
 
         const data = await axios.put("/todo", {
@@ -154,13 +162,36 @@ export default function ModalAddEditToDo({ fetchData, title, target, action, cat
 
     const handleSubmit = () => {
         try {
-            console.log('submit')
+            let newErrors = {};
+
+            if (!formData.title.trim()) {
+                newErrors.title = '*Tiêu đề không được để trống và từ trên 50 ký tự!';
+            }else if (formData.title.length > 50) {
+                newErrors.title = '*Tiêu đề không được trên 50 ký tự!';
+            }
+
+            if (!formData.category_id || formData.category_id <= 0) {
+                newErrors.category_id = '*Bạn phải chọn danh mục!';
+            }
+
+            if (formData.deadline) {
+                const deadlineDate =  moment(formData.deadline).format("YYYY-MM-DD HH:mm:ss");
+                const now = moment.now();
+                if (deadlineDate <= now) {
+                    newErrors.deadline = '*Thời gian deadline phải lớn hơn hiện tại!';
+                }
+            }
+
+            setErrors(newErrors);
+
+            if (Object.keys(newErrors).length > 0) {
+                return;
+            }
+
             if (todo_id) {
                 updateToDo()
-                console.log('edit')
             } else {
                 addToDo()
-                console.log('add')
             }
         } catch (error) {
             console.log(error.message)
@@ -189,7 +220,7 @@ export default function ModalAddEditToDo({ fetchData, title, target, action, cat
                         ></button>
                     </div>
                     <div class="modal-body">
-                        <ContentAddEditToDo categories={categories} handleChange={handleChange} formData={formData} />
+                        <ContentAddEditToDo categories={categories} handleChange={handleChange} formData={formData} errors={errors} />
                     </div>
                     <div class="modal-footer">
                         <button

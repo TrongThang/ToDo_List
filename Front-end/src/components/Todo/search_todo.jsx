@@ -1,20 +1,29 @@
 import axios from "../../services/customAxios"
 
-export default function SearchToDo({setListToDo, category}) {
+export default function SearchToDo({setCategories, category}) {
     const handleInputSearch = async (e) => {
         try {
-            let urlCate = ""
-            if (category !== 0) {
-                urlCate = `&cate_id=${category}`
+            let urlSearch = "";
+            let kw_todo = e.target.value;
+
+            if (category && category !== 0) {
+                urlSearch += `?id=${category}`;
             }
-            let kw = e.target.value;
-            const urlSearch = `/todo?kw=${kw}` + urlCate;
-            console.log(urlSearch)
-            const data = await axios.get(urlSearch)
+
+            if (kw_todo) {
+                let keyword = e.target.value.trim();
+                if (keyword) {
+                    urlSearch += urlSearch ? `&kw_todo=${encodeURIComponent(keyword)}` : `?kw_todo=${encodeURIComponent(keyword)}`;
+                }
+            }
+
+            // const urlSearch = `/category?kw_todo=${kw_todo}` + urlCate;
+            console.log("http://127.0.0.1:5000/category", urlSearch)
+            const data = await axios.get(`/category${urlSearch}`)
 
             console.log('Tìm kiếm:', data)
             if (data) {
-                setListToDo(data)
+                setCategories(data)
             }
         } catch (error) {
             console.log(error)
@@ -22,7 +31,14 @@ export default function SearchToDo({setListToDo, category}) {
     }
     return (
         <div>
-            <input type="text" name="search-todo" id="search-todo" onChange={(e) => handleInputSearch(e)}/>
+            <input
+                type="text"
+                className="form-control mt-2"
+                name="search-todo"
+                id="search-todo"
+                placeholder="Tìm kiếm..."
+                onChange={(e) => handleInputSearch(e)}
+            />
         </div>
     )
 }

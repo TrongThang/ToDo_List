@@ -13,8 +13,9 @@ const {
 } = require('../../services/ToDoServices')
 
 export default function TableToDo() {
-    const [listToDo, setListToDo] = useState([]);
+    // const [listToDo, setListToDo] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [allCate, setAlLCate] = useState([]);
     const [category, setCategory] = useState(0);
     const [todoEdit, setTodoEdit] = useState(null);
     const [report, setReport] = useState({
@@ -37,39 +38,49 @@ export default function TableToDo() {
             [name]: value
         });
 
-        if (name === 'cate_id') {
-            setCategory(value);
-            console.log('cate:', value)
-        }
-        console.log('Form data thay đổi: ', formData)
+        // if (name === 'cate_id') {
+        //     setCategory(value);
+        //     console.log('cate:', value)
+        // }
     };
 
     const fetchData = async () => {
         try {
-            const cate_id = formData.cate_id;
-            let urlCate = `/todo` + (category != 0 ? '?cate_id=' + category : '');
+            let urlCate = `/category` + (Number(category) != 0 ? '?id=' + category : '');
+            console.log(urlCate)
             const data = await axios.get(urlCate)
 
-            const dataCate = await axios.get("/category")
-            setListToDo(data)
-            setCategories(dataCate)
-            
-            let totalFinished = data.reduce((acc, todo) => todo.active === true ? acc + 1 : acc, 0)
-                
+            const allCate = await axios.get("/category")
+            // setListToDo(data)
+            setCategories(data)
+            setAlLCate(allCate)
+            console.log('Dữ liệu sau khi fetch:', data)
+            let totalFinished = data.reduce((acc, category) => 
+                acc + category.todos.filter(todo => todo.active).length, 0
+            );
+
+            let totalTodos = data.reduce((acc, category) => acc + category.todos.length, 0);
+
+
             setReport({
                 finished: totalFinished,
-                total: data.length
+                total: totalTodos,
             })
+
+            console.log("Số todo đã hoàn thành:", totalFinished);
+            console.log("Tổng số todo:", totalTodos);
         } catch (error) {
             console.log("Lỗi:", error)
         }
     }
 
     useEffect(() => {
-        fetchData()
+        if (category !== null) {
+            fetchData();
+        }
     }, [category])
 
-    if (!listToDo) {
+    if (!categories) {
         return
     }
 
@@ -77,10 +88,10 @@ export default function TableToDo() {
 
     return (
         <>
-            <div className="container-todo mb-3">
+            <div className="container-todo mb-3 mt-3">
                 <div className="stats-container">
                     <div className="detail-todo" >
-                        <h1>Hoàn Thành</h1>
+                        <h1 className="text-light">Hoàn Thành</h1>
                         <div id="progressBar" style={{backgroundColor: "#DCD7C9", borderRadius:"20px"}}> 
                             <div id="progress" style={{ width: `${progressPercentage}%`}} ></div>
                         </div>
@@ -98,20 +109,22 @@ export default function TableToDo() {
                         />
                     </div>
                     <div className="stats-numbers">
-                        <p id="numbers"> {report.finished} / {report.total}</p>
+                        <div className="mb-2" id="numbers">
+                            {report.finished} / {report.total}
+                        </div>
                     </div>
                 </div>
                 <div className="ms-5">
                     <MenuCategory
-                        categories={categories}
+                        allCate={allCate}
                         category={category}
                         setCategory={setCategory}
                         handleChange={handleChange}
                     />
-                    <SearchToDo setListToDo={setListToDo} category={category} />
+                    <SearchToDo setCategories={setCategories} category={category} />
                     </div>
             </div>
-            <div style={{padding: "0px"}}>
+            <div className="container mb-5" style={{padding: "0px"}}>
                 {/* Khu vực Danh sách ToDo và Menu */}                    
                 <ModalAddEditToDo
                     target="ToDoModal"
@@ -126,13 +139,11 @@ export default function TableToDo() {
                 <CategoryModalAddEdit fetchData={fetchData} categories={categories} />
 
                 {/* DANH SÁCH CATEGORY VÀ TO DO LIST */}
-                <div className="row col-12">
-                    
-                        {categories.map((item, index) => {
-                            return(
+                <div className="row col-12 ms-2">
+                    {categories.map((item, index) => {
+                        return(
                             <div className="col-lg-3 col-sm-12 col-md-6" style={{maxWidth: "350px"}}>
                                 <CategoryBackground
-                                    listToDo={listToDo}
                                     categories={categories}
                                     fetchData={fetchData}
                                     setTodoEdit={setTodoEdit}

@@ -41,15 +41,16 @@ export default function CategoryModalAddEdit({ fetchData, categories }) {
             return
         }
         console.log('cateEdit thay đổi')
+
         const fetchToDo = async () => {
             try {
                 if (cateEdit) {
-                    let data = await axios.get(`/category?id=${cateEdit}`)
-                    console.log(data)
-                    setFormData({
-                        id: data.id,
-                        name: data.name
-                    })
+                    // let data = await axios.get(`/category?id=${cateEdit}`)
+                    // console.log(data)
+                    // setFormData({
+                    //     id: data.id,
+                    //     name: data.name
+                    // })
 
                     setSetting({
                         title: "Cập nhật Danh Mục",
@@ -79,7 +80,7 @@ export default function CategoryModalAddEdit({ fetchData, categories }) {
             console.log('Thêm Cate:', data)
             if (data) {
                 resetForm()
-                fetchData()
+                await fetchData()
             }
         } catch (error) {
             console.log(error.message)
@@ -88,6 +89,8 @@ export default function CategoryModalAddEdit({ fetchData, categories }) {
 
     async function updateCategory() {
         try {
+            console.log('id:',formData.id)
+            console.log('name:',formData.name)
             const data = axios.put("/category", {
                 "id": formData.id,
                 "name": formData.name,
@@ -95,23 +98,24 @@ export default function CategoryModalAddEdit({ fetchData, categories }) {
 
             if (data) {
                 resetForm()
-                fetchData()
+                await fetchData()
             }
         } catch (error) {
             console.log(error.message)
         }
     }
-    const handleSubmit = (action = null) => {
+    const handleSubmit = async (action = null) => {
         try {
-            console.log('submit')
             if (cateEdit && action !== 'add') {
-                updateCategory()
+                await updateCategory()
+                setCateEdit(null)
                 console.log('edit')
             } else {
                 createCategory()
                 console.log('add')
             }
-            fetchData()
+            // resetForm()
+            // fetchData()
         } catch (error) {
             console.log(error.message)
         }
@@ -124,6 +128,7 @@ export default function CategoryModalAddEdit({ fetchData, categories }) {
             [name]: value
         })
     }
+
     return (
         <>
             <div
@@ -154,6 +159,8 @@ export default function CategoryModalAddEdit({ fetchData, categories }) {
                                 handleChange={handleChange}
                                 fetchData={fetchData}
                                 setCateEdit={setCateEdit}
+                                setFormData={setFormData}
+                                cateEdit={cateEdit}
                             />
                         </div>
                         {/* END BODY */}
