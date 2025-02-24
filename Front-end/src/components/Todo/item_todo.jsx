@@ -7,18 +7,25 @@ import ButtonModal from "../button_modal";
 import DeadlineStatus from "./deadline_status";
 import { Modal } from "bootstrap";
 
-export default function ItemToDo({ todo, index, categories, fetchData, setTodoEdit, setReport, report, cate_id }) {
-    const [active, setActive] = useState(todo.active)
+export default function ItemToDo({ id, index, categories, fetchData, setTodoEdit, setReport, report, cate_id, updateCategories }) {
+
+    const [todo, setToDo] = useState(null); 
     const [status, setStatus] = useState('')
     const [bgColor, setBgColor] = useState('none')
-    
-    const now = moment();
-    const deadline = moment(todo.deadline);
-    const duration = moment.duration(deadline.diff(now));
 
-    const days = Math.floor(duration.asDays());
-    const hours = Math.floor(duration.asHours() % 24);
-    const minutes = Math.floor(duration.asMinutes() % 60);
+    const fetchDataTodo = async () => {
+        try {
+            const data = await axios.get(`/todo?todo_id=${id}`)
+            
+            setToDo(data)
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        fetchDataTodo()
+    }, [id])
 
     useEffect(() => {
         if (status === "todo") setBgColor('#4CAF50')
@@ -28,6 +35,10 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
         else if (status === "expired") setBgColor('#F44336')
         else setBgColor('#fff')
     }, [status])
+    if (!todo) {
+        return
+    }
+    
 
     const handleDelete = async () => {
         const result = await Swal.fire({
@@ -67,7 +78,7 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
                 active: value
             })
 
-            fetchData()
+            setToDo({...todo, active: value})
         } catch (error) {
             console.log(error)
         }
@@ -82,7 +93,7 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
                 thumbtack: value
             })
 
-            fetchData()
+            setToDo({...todo, thumbtack: value})
         } catch (error) {
             console.log(error)
         }
@@ -92,15 +103,15 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
         try {
             var deadlineUpdated = e.target.value;
 
-            const deadlineFormatted = moment(deadlineUpdated).utc().format("YYYY-MM-DD HH:mm:ss");
-
+            const deadlineFormatted = moment(deadlineUpdated).format("YYYY-MM-DD HH:mm:ss");
+            console.log('deadlineUpdated:', deadlineUpdated)
+            console.log('deadlineFormatted:', deadlineFormatted)
             const data = await axios.put('/todo', {
                 id: todo.id,
                 deadline: deadlineFormatted
             })
-            console.log("Formatted Deadline:", deadlineFormatted);
-            fetchData()
 
+            setToDo({...todo, deadline: deadlineUpdated})
         } catch (error) {
             console.log(error)
         }
@@ -108,12 +119,14 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
 
     const handleCategory = async (e) => {
         try {
+            const newCateId = e.target.value;
+
             const data = await axios.put('/todo', {
                 id: todo.id,
-                category_id: e.target.value
+                category_id: newCateId
             })
 
-            fetchData()
+            updateCategories(todo, newCateId)
         } catch (error) {
             console.log(error)
         }
@@ -145,7 +158,7 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
                         <input
                             type="checkbox"
                             name="thumbtack"
-                            checked={todo.thumbtack}
+                            defaultChecked={todo.thumbtack}
                             onClick={(e) => handleThumbtack(e)}
                         />
                         {/* <span><i class="fa-solid fa-thumbtack"></i></span> */}
@@ -161,17 +174,17 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
                             onClick={e => e.stopPropagation}
                         />
                     </div>
-                    <DeadlineStatus todo={todo} deadline={deadline} status={status} setStatus={setStatus}/>
+                    <DeadlineStatus todo={todo} deadline={moment(todo.deadline)} status={status} setStatus={setStatus}/>
 
                     {/* TITLE */}
-                    <h4 style={{ textAlign: "left", wordWrap: "break-word", maxWidth: "12vw", paddingTop: "10px" }}>
+                    <h4 style={{ textAlign: "left", wordWrap: "break-word", maxWidth: "60%", paddingTop: "10px" }}>
                         {todo.title}
                     </h4>
 
                     <div className="custom-select">
                         <select 
                             className="form-select"
-                            value={cate_id}
+                            value={todo.category}
                             style={{ width: "50%", height: "6vh", textWrap: "wrap"}}
                             onChange={(e) => handleCategory(e)}
                             onClick={e => e.stopPropagation}
@@ -184,7 +197,7 @@ export default function ItemToDo({ todo, index, categories, fetchData, setTodoEd
                         </select>
                     </div>
                     <div className="checked-finished">
-                        <label for="checked"></label>
+                        <label htmlFor="checked"></label>
                         <input
                             type="checkbox"
                             class="custom-checkbox"

@@ -7,12 +7,13 @@ import ModalAddEditToDo from "./modal_add_edit_todo";
 import CategoryModalAddEdit from "../Category/category_modal_add_edit";
 import CategoryBackground from "./categoryBackground";
 import SearchToDo from "./search_todo";
+import AccountArea from "../accountArea";
 
 const {
     fetchAllToDo
 } = require('../../services/ToDoServices')
 
-export default function TableToDo() {
+export default function TableToDo({username}) {
     // const [listToDo, setListToDo] = useState([]);
     const [categories, setCategories] = useState([]);
     const [allCate, setAlLCate] = useState([]);
@@ -31,17 +32,21 @@ export default function TableToDo() {
         "deadline": '',
         "active": '',
     })
+
+    useEffect(() => {
+        console.log('username:', username)
+        
+        if (!username) {
+            window.location.href = '/login'
+        }
+    }, [username])
+    
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
             [name]: value
         });
-
-        // if (name === 'cate_id') {
-        //     setCategory(value);
-        //     console.log('cate:', value)
-        // }
     };
 
     const fetchData = async () => {
@@ -124,6 +129,7 @@ export default function TableToDo() {
                     <SearchToDo setCategories={setCategories} category={category} />
                     </div>
             </div>
+            <AccountArea username={username} />
             <div className="container mb-5" style={{padding: "0px"}}>
                 {/* Khu vực Danh sách ToDo và Menu */}                    
                 <ModalAddEditToDo
@@ -150,6 +156,7 @@ export default function TableToDo() {
                                     setReport={setReport}
                                     report={report}
                                     categoryCurrent={item}
+                                    setCategories={setCategories}
                                 />
                             </div>)
                         })}

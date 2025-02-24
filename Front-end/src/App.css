@@ -230,6 +230,7 @@ body {
     bottom: -27px;
     left: 0;
     padding-left: 20px;
+    border-bottom-right-radius: 10px;
     clip-path: polygon(0% 0%, 100% 0%, 100% 80%, 100% 100%, 10% 100%, 0% 0%);
 }
 
@@ -297,6 +298,7 @@ body {
     top: -18px;
     left: -5px;
     transform: rotate(-30deg);
+    text-shadow: -3px -2px 2px white;
 }
 
 .check-thumbtack {
@@ -318,4 +320,115 @@ body {
     margin-left: 3px;
 }
 
-/* .add-edit-datetime input[type="datetime-local"]: */
+.container-profile {
+    position: relative;
+}
+
+.container-profile .profile {
+    position: fixed;
+    right: 10px;
+    top: 5%;
+}
+
+.container-profile .profile button{
+    border-radius: 10px;
+    margin: 5px;
+    color:#fff;
+    padding: 10px;
+    border: none;
+    box-shadow: rgba(164, 112, 112, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.container-profile .profile .login {
+    background-color: #B7B1F2;
+}
+
+.container-profile .profile .login:hover {
+    background-color: #998ff4;
+    color: #544d94;
+}
+
+.container-profile .profile .register {
+    background-color: #D69ADE;
+}
+
+.container-profile .profile .register:hover {
+    background-color: #df72ed;
+    color: #944e9d;
+}
+
+.container-profile .profile .logout {
+    background-color: #289cd2;
+}
+
+.container-profile .profile .logout:hover {
+    background-color: #2d56dc;
+    color: #ffffff;
+    border: 1px solid black;
+}
+
+.form-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container-login {
+    width: 500px;
+    padding: 20px;
+    border-radius: 10px;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.container-login input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+.container-login input:focus {
+    border-color: #007bff;
+    box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
+}
+
+.container-login button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    background: #007bff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.container-login button:hover {
+    background: #0056b3;
+}
+
+.container-login label {
+    font-size: 14px;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+}

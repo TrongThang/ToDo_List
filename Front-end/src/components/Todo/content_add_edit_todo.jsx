@@ -33,7 +33,7 @@ export default function ContentAddEditToDo({ categories, handleChange, formData,
                 />
             </div>
             <div class="mb-3 me-4">
-                <label for="deadline me-1">⏰ Hẹn giờ</label>
+                <label htmlFor="deadline me-1">⏰ Hẹn giờ</label>
                 <input
                     type="datetime-local"
                     className="add-edit-datetime"

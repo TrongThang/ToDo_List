@@ -25,6 +25,7 @@ def get_list_todo(cate_id = None, kw = None):
 
     list_todo = db.session.execute(query).scalars().all()
 
+    # return list_todo
     return [
         {
             "id": todo.id,

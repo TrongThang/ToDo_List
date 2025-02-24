@@ -60,6 +60,6 @@ export default function DeadlineStatus({deadline, setStatus, status, todo}) {
     };
 
     return (
-        <span style={{width: "8vw", padding: "0px"}} className={`${getBackgroundClass()} deadline-status`}>{timeDisplay()}</span>
+        <span style={{width: "40%", padding: "0px"}} className={`${getBackgroundClass()} deadline-status`}>{timeDisplay()}</span>
     );
 }
